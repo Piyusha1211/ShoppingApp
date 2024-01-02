@@ -57,8 +57,6 @@ android {
         implementation "com.gorisse.thomas.sceneform:sceneform:1.21.0"
         implementation 'de.hdodenhof:circleimageview:3.1.0'
         implementation 'com.google.firebase:firebase-database:20.3.0'
-
-
     }
 
     apply plugin: 'com.google.gms.google-services'
