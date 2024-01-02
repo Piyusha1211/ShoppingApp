@@ -1,6 +1,5 @@
 package com.example.aifit;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -15,52 +14,57 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class editProfile extends AppCompatActivity {
-    EditText editName, editContact, editBirthdate;
-    TextView editEmail;
-    Button saveButton;
-    String nameUser, emailUser, contactUser, birthdateUser;
-    DatabaseReference reference;
+    EditText eName, eContact, eDoB;
+    TextView eEmail;
+    Button save;
+    String nUser, eUser, cUser, DoBUser;
+    DatabaseReference ref;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        reference = FirebaseDatabase.getInstance().getReference("profile");
+        // Initialize Database reference
+        ref = FirebaseDatabase.getInstance().getReference("profile");
 
-        editName = findViewById(R.id.editName);
-        editEmail = findViewById(R.id.editEmail);
-        editContact = findViewById(R.id.editContact);
-        editBirthdate = findViewById(R.id.editBirthdate);
-        saveButton = findViewById(R.id.saveButton);
+        // Initialize UserInterface elements
+        eName = findViewById(R.id.editName);
+        eEmail = findViewById(R.id.editEmail);
+        eContact = findViewById(R.id.editContact);
+        eDoB = findViewById(R.id.editBirthdate);
+        save = findViewById(R.id.saveButton);
 
+        // Show existing data in the UserInterface
         showData();
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        // Set onClickListener for the button
+        save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Save changes when the button is clicked
                 saveChanges();
             }
         });
     }
 
+    // changes done by the user
     private void saveChanges() {
         if (isNameChanged() || isContactChanged() || isEmailChanged() || isBirthdateChanged()) {
-            // Create an Intent to hold the edited data
+            // If any data is altered, create an Intent to keep the edited data
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("editedName", nameUser);
-            resultIntent.putExtra("editedEmail", emailUser);
-            resultIntent.putExtra("editedContact", contactUser);
-            resultIntent.putExtra("editedBirthdate", birthdateUser);
+            resultIntent.putExtra("editedName", nUser);
+            resultIntent.putExtra("editedEmail", eUser);
+            resultIntent.putExtra("editedContact", cUser);
+            resultIntent.putExtra("editedBirthdate", DoBUser);
 
             // Set the result as OK and pass the Intent with edited data
             setResult(RESULT_OK, resultIntent);
 
-            // Display a Toast indicating that changes are saved
+            // Show a Toast indicating that changes are saved
             Toast.makeText(editProfile.this, "Changes Saved", Toast.LENGTH_SHORT).show();
         } else {
-            // Display a Toast indicating that no changes are found
+            // If no changes are found, show a Toast
             Toast.makeText(editProfile.this, "No Changes Found", Toast.LENGTH_SHORT).show();
         }
 
@@ -68,56 +72,66 @@ public class editProfile extends AppCompatActivity {
         finish();
     }
 
+    // Check if the name is changed
     private boolean isNameChanged() {
-        String newName = editName.getText().toString().trim();
-        if (!nameUser.equals(newName) && !newName.isEmpty()) {
-            reference.child(nameUser).child("name").setValue(newName);
-            nameUser = newName;
+        String newName = eName.getText().toString().trim();
+        if (!nUser.equals(newName) && !newName.isEmpty()) {
+            // If changed, update the database and update the local variable
+            ref.child(nUser).child("name").setValue(newName);
+            nUser = newName;
             return true;
         }
         return false;
     }
 
+    // Check if the email is changed
     private boolean isEmailChanged() {
-        String newEmail = editEmail.getText().toString();
-        if (!emailUser.equals(newEmail)) {
-            reference.child(nameUser).child("email").setValue(newEmail);
-            emailUser = newEmail;
+        String newEmail = eEmail.getText().toString();
+        if (!eUser.equals(newEmail)) {
+            // If changed, update the database and update the local variable
+            ref.child(nUser).child("email").setValue(newEmail);
+            eUser = newEmail;
             return true;
         }
         return false;
     }
 
+    // Check if the contact is changed
     private boolean isContactChanged() {
-        String newContact = editContact.getText().toString();
-        if (!contactUser.equals(newContact)) {
-            reference.child(nameUser).child("contact").setValue(newContact);
-            contactUser = newContact;
+        String newContact = eContact.getText().toString();
+        if (!cUser.equals(newContact)) {
+            // If changed, update the database and update the local variable
+            ref.child(nUser).child("contact").setValue(newContact);
+            cUser = newContact;
             return true;
         }
         return false;
     }
 
+    // Check if the birthdate is changed
     private boolean isBirthdateChanged() {
-        String newBirthdate = editBirthdate.getText().toString();
-        if (!birthdateUser.equals(newBirthdate)) {
-            reference.child(nameUser).child("birthdate").setValue(newBirthdate);
-            birthdateUser = newBirthdate;
+        String newBirthdate = eDoB.getText().toString();
+        if (!eDoB.equals(newBirthdate)) {
+            // If changed, update the database and update the local variable
+            ref.child(nUser).child("birthdate").setValue(newBirthdate);
+            DoBUser = newBirthdate;
             return true;
         }
         return false;
     }
 
-    public void showData() {
+    // Display existing data in the UserInterface
+    private void showData() {
         Intent intent = getIntent();
-        nameUser = intent.getStringExtra("name");
-        emailUser = intent.getStringExtra("email");
-        contactUser = intent.getStringExtra("contact");
-        birthdateUser = intent.getStringExtra("birthdate");
+        nUser = intent.getStringExtra("name");
+        eUser = intent.getStringExtra("email");
+        cUser = intent.getStringExtra("contact");
+        DoBUser = intent.getStringExtra("birthdate");
 
-        editName.setText(nameUser);
-        editEmail.setText(emailUser);
-        editContact.setText(contactUser);
-        editBirthdate.setText(birthdateUser);
+        // Set the existing data in the UserInterface
+        eName.setText(nUser);
+        eEmail.setText(eUser);
+        eContact.setText(cUser);
+        eDoB.setText(DoBUser);
     }
 }

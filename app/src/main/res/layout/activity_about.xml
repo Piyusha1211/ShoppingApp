@@ -82,7 +82,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:src="@drawable/uploadimg"
-                    android:id="@+id/uploadImage"
+                    android:id="@+id/Image"
                     android:layout_marginTop="10dp"
                     android:scaleType="fitXY"/>
 
@@ -100,7 +100,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:id="@+id/uploadDesc"
+                    android:id="@+id/Desc"
                     android:background="@drawable/lavender_border"
                     android:layout_marginTop="10dp"
                     android:padding="16dp"
@@ -133,7 +133,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:text="Save"
-                    android:id="@+id/saveButton"
+                    android:id="@+id/save"
                     android:textSize="18sp"
                     android:layout_marginTop="20dp"
                     android:backgroundTint="@color/lavender"

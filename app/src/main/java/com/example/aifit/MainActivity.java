@@ -1,23 +1,24 @@
 package com.example.aifit;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
-
-import androidx.appcompat.widget.Toolbar;
 
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
@@ -34,122 +35,157 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    SwitchCompat switchMode;
-    private SessionManager session;
-    boolean nightMode;
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
-    ImageSlider imageSlider;
-    String nameFromDB, emailFromDB, birthdateFromDB, contactFromDB;
-    NavigationView navigationView;
-    private DrawerLayout drawerLayout;
-    Toolbar toolbar;
+    SwitchCompat Mode;
+    SharedPreferences shPref;
+    SharedPreferences.Editor edit;
+    ImageSlider imgSl;
+    String nameDB, emailDB, birthdateDB, contactDB;
+    NavigationView navView;
+    private DrawerLayout drawLay;
+    Toolbar tb;
     CardView shirt, coat, cap, frock, pant, shorts;
+
+    SessionManager sess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        imageSlider = findViewById(R.id.ImageSlider);
-        ArrayList<SlideModel> slideModels = new ArrayList<>();
-        session = new SessionManager(getApplicationContext());
+        initializeUI();
 
-        slideModels.add(new SlideModel(R.drawable.mobileecommerce, ScaleTypes.FIT));
-        slideModels.add(new SlideModel(R.drawable.onlineshopping, ScaleTypes.FIT));
-        slideModels.add(new SlideModel(R.drawable.coat, ScaleTypes.FIT));
-        slideModels.add(new SlideModel(R.drawable.shirt, ScaleTypes.FIT));
+        setupImageSlider();
 
-        imageSlider.setImageList(slideModels, ScaleTypes.FIT);
+        setupNightModeSwitch();
 
-        switchMode = findViewById(R.id.switchMode);
-        sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
-        nightMode = sharedPreferences.getBoolean("nightMode", false);
+        setCardClickListeners();
 
-        if (nightMode) {
-            switchMode.setChecked(true);
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        switchMode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (nightMode) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    editor = sharedPreferences.edit();
-                    editor.putBoolean("nightMode", false);
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    editor = sharedPreferences.edit();
-                    editor.putBoolean("nightMode", true);
-                }
-                editor.apply();
-            }
-        });
+        setupToolbar();
 
-        // Onclicking the dashboard cards
+        setNavigationDrawer();
+
+        getUserDetails();
+
+        handleSavedInstanceState(savedInstanceState);
+    }
+
+    private void initializeUI() {
+        imgSl = findViewById(R.id.ImageSlider);
+        Mode = findViewById(R.id.switchMode);
+        shPref = getSharedPreferences("MODE", MODE_PRIVATE);
+
         shirt = findViewById(R.id.shirtCard);
         coat = findViewById(R.id.coatCard);
         cap = findViewById(R.id.capCard);
         frock = findViewById(R.id.frockCard);
         pant = findViewById(R.id.pantCard);
         shorts = findViewById(R.id.shortCard);
+    }
 
+    private void setupImageSlider() {
+        ArrayList<SlideModel> slideModels = new ArrayList<>();
+        slideModels.add(new SlideModel(R.drawable.mobileecommerce, ScaleTypes.FIT));
+        slideModels.add(new SlideModel(R.drawable.onlineshopping, ScaleTypes.FIT));
+        slideModels.add(new SlideModel(R.drawable.coat, ScaleTypes.FIT));
+        slideModels.add(new SlideModel(R.drawable.shirt, ScaleTypes.FIT));
+        imgSl.setImageList(slideModels, ScaleTypes.FIT);
+    }
+
+    private void setupNightModeSwitch() {
+        boolean nightMode = shPref.getBoolean("nightMode", false);
+
+        Mode.setChecked(nightMode);
+
+        Mode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleNightMode();
+            }
+        });
+    }
+
+    private void toggleNightMode() {
+        if (Mode.isChecked()) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            edit = shPref.edit();
+            edit.putBoolean("nightMode", true);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            edit = shPref.edit();
+            edit.putBoolean("nightMode", false);
+        }
+        edit.apply();
+    }
+
+    private void setCardClickListeners() {
+        // Onclicking the dashboard cards
         shirt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, settingsActivity.class);
-                i.putExtra("category", "T-Shirts");
-                startActivity(i);
+                openSettingsActivity("T-Shirts");
             }
         });
 
         coat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, settingsActivity.class);
-                i.putExtra("category", "Coats");
-                startActivity(i);
+                openSettingsActivity("Coats");
             }
         });
 
         cap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, settingsActivity.class);
-                i.putExtra("category", "Caps");
-                startActivity(i);
+                openSettingsActivity("Caps");
             }
         });
 
         frock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, settingsActivity.class);
-                i.putExtra("category", "Frocks");
-                startActivity(i);
+                openSettingsActivity("Frocks");
             }
         });
 
         pant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, settingsActivity.class);
-                i.putExtra("category", "Pants");
-                startActivity(i);
+                openSettingsActivity("Pants");
             }
         });
 
         shorts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, settingsActivity.class);
-                i.putExtra("category", "Shorts");
-                startActivity(i);
+                openSettingsActivity("Shorts");
             }
         });
+    }
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+    private void openSettingsActivity(String category) {
+        Intent intent = new Intent(MainActivity.this, settingsActivity.class);
+        intent.putExtra("category", category);
+        startActivity(intent);
+    }
+
+    private void setupToolbar() {
+        tb = findViewById(R.id.toolbar);
+        setSupportActionBar(tb);
+    }
+
+    private void setNavigationDrawer() {
+        drawLay = findViewById(R.id.drawerLayout);
+        navView = findViewById(R.id.nav_view);
+        navView.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawLay, tb, R.string.open_nav, R.string.close_nav);
+
+        drawLay.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    private void getUserDetails() {
         Intent intent = getIntent();
         String userUsername = intent.getStringExtra("name");
 
@@ -159,94 +195,102 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    nameFromDB = snapshot.child(userUsername).child("name").getValue(String.class);
-                    emailFromDB = snapshot.child(userUsername).child("email").getValue(String.class);
-                    contactFromDB = snapshot.child(userUsername).child("contact").getValue(String.class);
-                    birthdateFromDB = snapshot.child(userUsername).child("birthdate").getValue(String.class);
+                    nameDB = snapshot.child(userUsername).child("name").getValue(String.class);
+                    emailDB = snapshot.child(userUsername).child("email").getValue(String.class);
+                    contactDB = snapshot.child(userUsername).child("contact").getValue(String.class);
+                    birthdateDB = snapshot.child(userUsername).child("birthdate").getValue(String.class);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                // Handle onCancelled event
             }
         });
-        drawerLayout = findViewById(R.id.drawerLayout);
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+    }
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav,
-                R.string.close_nav);
-
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
+    private void handleSavedInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            navigationView.setCheckedItem(R.id.nav_home);
+            navView.setCheckedItem(R.id.nav_home);
         }
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.nav_home:
                 // Handle the action for the Home menu item
-                // You can update UI or perform any other action based on your requirements
+                // Update Userinterface based on the requirements
                 break;
             case R.id.nav_about:
-                Intent intent = new Intent(this, Myprofile.class);
-                intent.putExtra("name", nameFromDB);
-                intent.putExtra("email", emailFromDB);
-                intent.putExtra("contact", contactFromDB);
-                intent.putExtra("birthdate", birthdateFromDB);
-                startActivity(intent);
+                openProfileActivity();
                 break;
             case R.id.nav_settings:
-                Intent i = new Intent(this, About.class);
-                i.putExtra("name", nameFromDB);
-                startActivity(i);
+                openAboutActivity();
                 break;
             case R.id.nav_share:
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this amazing app!");
-                startActivity(Intent.createChooser(shareIntent, "Share using"));
+                shareApp();
                 break;
             case R.id.nav_cart:
-                i=new Intent(this,ViewCart.class);
-                i.putExtra("name", nameFromDB);
-                startActivity(i);
+                openViewCartActivity();
                 break;
             case R.id.nav_logout:
-                Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
-                FirebaseAuth.getInstance().signOut();
-
-                session.setLoggedIn(false);
-                intent = new Intent(this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-
+                handleLogout();
                 break;
         }
-        drawerLayout.closeDrawer(GravityCompat.START);
+        drawLay.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    private void openProfileActivity() {
+        Intent intent = new Intent(this, Myprofile.class);
+        intent.putExtra("name", nameDB);
+        intent.putExtra("email", emailDB);
+        intent.putExtra("contact", contactDB);
+        intent.putExtra("birthdate", birthdateDB);
+        startActivity(intent);
+    }
+
+    private void openAboutActivity() {
+        Intent intent = new Intent(this, About.class);
+        intent.putExtra("name", nameDB);
+        startActivity(intent);
+    }
+
+    private void shareApp() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this amazing app!");
+        startActivity(Intent.createChooser(shareIntent, "Share using"));
+    }
+
+    private void openViewCartActivity() {
+        Intent intent = new Intent(this, ViewCart.class);
+        intent.putExtra("name", nameDB);
+        startActivity(intent);
+    }
+
+    private void handleLogout() {
+        Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
+        FirebaseAuth.getInstance().signOut();
+
+        // Clear session
+
+        sess.setLoggedIn(false);
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
+        if (drawLay.isDrawerOpen(GravityCompat.START)) {
+            drawLay.closeDrawer(GravityCompat.START);
         } else {
-            // Exit the app instead of going back to the login/signup page
+            // Exit the app
             finishAffinity();
         }
     }
 }
-
-
-
-
-
-

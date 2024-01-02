@@ -20,61 +20,64 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class settingsActivity extends AppCompatActivity  {
-    RecyclerView recyclerView;
-    List<DataClass> dataList;
-    ValueEventListener eventListener;
-
-    String nameFromDB;
-    DatabaseReference databaseReference;
-    SearchView searchView;
-    MyAdapter adapter;
-    Query databaseQuery; // Declare databaseQuery as Query object instead of DatabaseReference
-
-
+public class settingsActivity extends AppCompatActivity {
+    RecyclerView recView;
+    List<DataClass> List;
+    SearchView sView;
+    MyAdapter adap;
+    ValueEventListener eList;
+    String nameDB;
+    DatabaseReference dataRef;
+    Query dataQ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        // Get the category from the Intent
         String category = getIntent().getStringExtra("category");
 
-        recyclerView = findViewById(R.id.recyclerView);
-        searchView = findViewById(R.id.search);
-        searchView.clearFocus();
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(settingsActivity.this, 1);
-        recyclerView.setLayoutManager(gridLayoutManager);
+        // Initialize UserInterface components
+        recView = findViewById(R.id.recyclerView);
+        sView = findViewById(R.id.search);
+        sView.clearFocus();
 
+        // Set up the RecyclerView with a GridLayoutManager
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(settingsActivity.this, 1);
+        recView.setLayoutManager(gridLayoutManager);
+
+        // Set up AlertDialog for progress
         AlertDialog.Builder builder = new AlertDialog.Builder(settingsActivity.this);
         builder.setCancelable(false);
         builder.setView(R.layout.activity_progress);
         AlertDialog dialog = builder.create();
-        dialog.show();
 
-        dataList = new ArrayList<>();
-        adapter = new MyAdapter(settingsActivity.this, dataList);
-        recyclerView.setAdapter(adapter);
+        // Initialize data list and adapter
+        List = new ArrayList<>();
+        adap = new MyAdapter(settingsActivity.this, List);
+        recView.setAdapter(adap);
 
-
-        databaseReference = FirebaseDatabase.getInstance().getReference("upload");
-
-        databaseQuery = FirebaseDatabase.getInstance().getReference("upload")
+        // Initialize DatabaseReference and Query
+        dataRef = FirebaseDatabase.getInstance().getReference("upload");
+        dataQ = FirebaseDatabase.getInstance().getReference("upload")
                 .orderByChild("dataCategory")
                 .equalTo(category); // Filter the results based on the category
 
-
+        // Display progress dialog
         dialog.show();
-        eventListener = databaseQuery.addValueEventListener(new ValueEventListener() {
+
+        // Attach ValueEventListener to get data from the database
+        eList = dataQ.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                dataList.clear();
+                List.clear();
                 for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
                     DataClass dataClass = itemSnapshot.getValue(DataClass.class);
                     dataClass.setKey(itemSnapshot.getKey());
-                    dataList.add(dataClass);
+                    List.add(dataClass);
                 }
-                adapter.notifyDataSetChanged();
+                adap.notifyDataSetChanged();
                 dialog.dismiss();
             }
 
@@ -84,7 +87,8 @@ public class settingsActivity extends AppCompatActivity  {
             }
         });
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        // Set up SearchView listener for removing data
+        sView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
@@ -98,30 +102,29 @@ public class settingsActivity extends AppCompatActivity  {
         });
     }
 
+    // Method to remove data based on search text
     public void searchList(String text) {
         ArrayList<DataClass> searchList = new ArrayList<>();
-        for (DataClass dataClass : dataList) {
+        for (DataClass dataClass : List) {
             if (dataClass.getDataTitle().toLowerCase().contains(text.toLowerCase())) {
                 searchList.add(dataClass);
             }
         }
-        adapter.searchDataList(searchList);
+        adap.searchDataList(searchList);
     }
 
-
-
-    public void passUserData(){
-
+    // Method to pass user data
+    public void passUserData() {
         Intent intent = getIntent();
-        nameFromDB = intent.getStringExtra("name");
-
+        nameDB = intent.getStringExtra("name");
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         passUserData();
         Intent intent = new Intent(settingsActivity.this, MainActivity.class);
-        intent.putExtra("name", nameFromDB);
+        intent.putExtra("name", nameDB);
         startActivity(intent);
     }
 }

@@ -1,10 +1,8 @@
 package com.example.aifit;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,52 +14,62 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class Createprofile extends AppCompatActivity {
-    ArrayAdapter ad;
-    EditText Name,contact, birthdate;
-    TextView Email,pass;
+    // Declare UI elements
+    EditText nam, cont, bd;
+    TextView email, pass;
+    Button Profile;
 
-    Button CreateProfile;
-    FirebaseDatabase database;
-    DatabaseReference reference;
-        String s2[]={"Female","Male","Others"};
-    @SuppressLint("MissingInflatedId")
+    FirebaseDatabase data;
+    DatabaseReference ref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_createprofile);
-        Name = findViewById(R.id.sname);
-        Email = findViewById(R.id.semail);
-        birthdate = findViewById(R.id.birthdate);
-        contact = findViewById(R.id.contact);
-        pass=findViewById(R.id.pass);
-        CreateProfile = findViewById(R.id.createProfile);
 
+        // Initialize UserInterface elements
+        nam = findViewById(R.id.sname);
+        email = findViewById(R.id.semail);
+        bd = findViewById(R.id.birthdate);
+        cont = findViewById(R.id.contact);
+        pass = findViewById(R.id.pass);
+        Profile = findViewById(R.id.createProfile);
+
+        // Extract data from the previous activity
         Intent intent = getIntent();
-        String email = intent.getStringExtra("email");
-        String password= intent.getStringExtra("password");
+        String userEmail = intent.getStringExtra("email");
+        String userPassword = intent.getStringExtra("password");
 
-        Email.setText(email);
-        pass.setText(password);
+        // Set email and password
+        email.setText(userEmail);
+        pass.setText(userPassword);
 
-        CreateProfile.setOnClickListener(new View.OnClickListener() {
+        // Set clicklistener for profile button
+        Profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                database = FirebaseDatabase.getInstance();
-                reference = database.getReference("profile");
+                // Initialize Database
+                data = FirebaseDatabase.getInstance();
+                ref = data.getReference("profile");
 
-                String name = Name.getText().toString();
-                String contactn = contact.getText().toString();
-                String Birthdate = birthdate.getText().toString();
+                // Get user input
+                String userName = nam.getText().toString();
+                String userContact = cont.getText().toString();
+                String userBirthdate = bd.getText().toString();
 
-                HelperC helperClass = new HelperC(name, email, contactn,Birthdate,password);
-                reference.child(name.replace(".", "_")).setValue(helperClass);
-                Toast.makeText(Createprofile.this, "You have signup successfully!", Toast.LENGTH_SHORT).show();
-                Intent in = new Intent(Createprofile.this, LoginActivity.class);
-                startActivity(in);
+                // Make HelperC object with userdetails
+                HelperC helperClass = new HelperC(userName, userEmail, userContact, userBirthdate, userPassword);
+
+                // Save userprofile in Database
+                ref.child(userName.replace(".", "_")).setValue(helperClass);
+
+                // Show success message
+                Toast.makeText(Createprofile.this, "You have signed up successfully!", Toast.LENGTH_SHORT).show();
+
+                // Goes to LoginActivity
+                Intent loginIntent = new Intent(Createprofile.this, LoginActivity.class);
+                startActivity(loginIntent);
             }
         });
-
     }
 }
-
-

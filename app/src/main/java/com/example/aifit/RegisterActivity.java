@@ -18,61 +18,80 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
-    private FirebaseAuth auth;
-    private EditText Email,Password;
-    private Button button;
-    private Button Redirect;
+    private FirebaseAuth Auth;
+    private EditText usEmail, usPass;
+    private Button regButton, redirecButton;
 
-    FirebaseDatabase db;
-    DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+    // Firebase Database
+    FirebaseDatabase fData;
+    DatabaseReference dataRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        auth=FirebaseAuth.getInstance();
-        Email=findViewById(R.id.email);
-        Password=findViewById(R.id.registerpassword);
-        button=findViewById(R.id.buttonregister);
-        Redirect=findViewById(R.id.AlreadyHaveAccount);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        // Initialize Firebase Auth
+        Auth = FirebaseAuth.getInstance();
+
+        // Initialize UserInterface elements
+        usEmail = findViewById(R.id.email);
+        usPass = findViewById(R.id.registerpassword);
+        regButton = findViewById(R.id.buttonregister);
+        redirecButton = findViewById(R.id.AlreadyHaveAccount);
+
+        // Set clicklistener for button
+        regButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                db = FirebaseDatabase.getInstance();
-                reference = db.getReference("users");
-                String user = Email.getText().toString();
-                String pass = Password.getText().toString();
+                // Initialize Database
+                fData = FirebaseDatabase.getInstance();
+                dataRef = fData.getReference("users");
 
-                if (user.isEmpty()) {
-                    Email.setError("Email cannot be empty");
-                } else if (pass.isEmpty()) {
-                    Password.setError("Password cannot be empty");
+                // Get the userinput
+                String email = usEmail.getText().toString().trim();
+                String password = usPass.getText().toString().trim();
+
+                // Validate the userinput
+                if (email.isEmpty()) {
+                    usEmail.setError("Email cannot be empty");
+                } else if (password.isEmpty()) {
+                    usPass.setError("Password cannot be empty");
                 } else {
-                    auth.createUserWithEmailAndPassword(user, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(RegisterActivity.this, "Signup successful", Toast.LENGTH_SHORT).show();
-                                HelperClass hc = new HelperClass(user, pass);
-                                reference.child(user.replace(".", "_")).setValue(hc);
+                    // Create a new user using Authentication
+                    Auth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Signup successful
+                                        Toast.makeText(RegisterActivity.this, "Signup successful", Toast.LENGTH_SHORT).show();
 
-                                Intent i = new Intent(RegisterActivity.this, Createprofile.class);
-                                i.putExtra("email", user);
-                                i.putExtra("password", pass);
-                                startActivity(i);
-                            } else {
-                                Toast.makeText(RegisterActivity.this, "Signup failed" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                                        // Save user data in Database
+                                        HelperClass helperClass = new HelperClass(email, password);
+                                        dataRef.child(email.replace(".", "_")).setValue(helperClass);
+
+                                        // Redirect to CreateProfile
+                                        Intent intent = new Intent(RegisterActivity.this,Createprofile.class);
+                                        intent.putExtra("email", email);
+                                        intent.putExtra("password", password);
+                                        startActivity(intent);
+                                    } else {
+                                        // If signup fails, shows error message
+                                        Toast.makeText(RegisterActivity.this, "Signup failed" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                 }
             }
         });
 
-        Redirect.setOnClickListener(new View.OnClickListener() {
+        // Set clicklistener for redirect to login button
+        redirecButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(RegisterActivity.this,LoginActivity.class));
+                // Redirect to LoginActivity
+                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
             }
         });
     }

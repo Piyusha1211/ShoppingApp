@@ -33,10 +33,10 @@ import java.text.DateFormat;
 import java.util.Calendar;
 
 public class About extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
-    ImageView uploadImage;
-    Button saveButton;
+    ImageView upImage;
+    Button save;
     String nameFromDB;
-    EditText uploadTopic, uploadDesc, uploadLang;
+    EditText upTopic, upDesc, upLang;
     Spinner s;
     ArrayAdapter ad;
     String s2[]={"T-Shirts","Coats","Caps","Frocks","Pants","Shorts"};
@@ -48,11 +48,11 @@ public class About extends AppCompatActivity implements AdapterView.OnItemSelect
         setContentView(R.layout.activity_about);
 
         //   FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        uploadImage = findViewById(R.id.uploadImage);
-        uploadDesc = findViewById(R.id.uploadDesc);
-        uploadTopic = findViewById(R.id.uploadTopic);
-        uploadLang = findViewById(R.id.uploadLang);
-        saveButton = findViewById(R.id.saveButton);
+        upImage = findViewById(R.id.Image);
+        upDesc = findViewById(R.id.Desc);
+        upTopic = findViewById(R.id.uploadTopic);
+        upLang = findViewById(R.id.uploadLang);
+        save = findViewById(R.id.save);
 
         ad=new ArrayAdapter<String>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,s2);
         s=findViewById(R.id.spinner);
@@ -67,14 +67,14 @@ public class About extends AppCompatActivity implements AdapterView.OnItemSelect
                         if (result.getResultCode() == Activity.RESULT_OK){
                             Intent data = result.getData();
                             uri = data.getData();
-                            uploadImage.setImageURI(uri);
+                            upImage.setImageURI(uri);
                         } else {
                             Toast.makeText(About.this, "No Image Selected", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
         );
-        uploadImage.setOnClickListener(new View.OnClickListener() {
+        upImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent photoPicker = new Intent(Intent.ACTION_PICK);
@@ -82,7 +82,7 @@ public class About extends AppCompatActivity implements AdapterView.OnItemSelect
                 activityResultLauncher.launch(photoPicker);
             }
         });
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saveData();
@@ -115,9 +115,9 @@ public class About extends AppCompatActivity implements AdapterView.OnItemSelect
         });
     }
     public void uploadData(){
-        String title = uploadTopic.getText().toString();
-        String desc = uploadDesc.getText().toString();
-        String lang = uploadLang.getText().toString();
+        String title = upTopic.getText().toString();
+        String desc = upDesc.getText().toString();
+        String lang = upLang.getText().toString();
         String category = ad.getItem(s.getSelectedItemPosition()).toString();
 
         DataClass dataClass = new DataClass(title, desc, lang,category,imageURL);
