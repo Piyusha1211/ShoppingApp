@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:background="@drawable/login"
-    tools:context=".CreateProfile ">
+    tools:context=".createProfile ">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
