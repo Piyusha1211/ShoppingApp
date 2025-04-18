@@ -1,75 +1,67 @@
-👕 AIFit: Machine Learning Approaches for Virtual Clothing Size Prediction
-AIFit is an Android-based mobile application that leverages Augmented Reality (AR) and Machine Learning to provide an immersive online shopping experience. It allows users to visualize 3D clothing models in their real environment using ARCore and Sceneform, while also predicting the best-fitting clothing size for users based on their profile data.
+# 👕 AIFit: Machine Learning Approaches for Virtual Clothing Size Prediction
 
-🚀 Features
-🔐 Authentication & Profile Management: Sign up, login, edit profiles, and manage user sessions securely with Firebase Authentication.
+AIFit is an Android mobile application that combines **Augmented Reality (AR)** and **Machine Learning** to provide a futuristic online shopping experience. It allows users to visualize how clothing items would look in their physical environment using AR, while also predicting suitable clothing sizes based on user profile data.
 
-🧠 ML-Based Fit Prediction: Smart clothing size recommendations powered by user data.
+---
 
-📱 Augmented Reality Visualizations: View realistic 3D models of clothing in your space using AR technology.
+## 📲 Features
 
-🛍️ E-commerce Functions: Browse, search, view details, and add items to your cart.
+- 🔐 **Authentication & Profile Management**
+  - User registration, login, profile creation, and editing
+  - Secure session management using Firebase Authentication
 
-🧾 Admin Panel: Add or update products using Firebase Realtime Database and Firebase Storage.
+- 🧠 **Size Prediction with Machine Learning**
+  - Smart size suggestions based on user attributes and item specifications
 
-🌙 Dark Mode Support: Toggle between light and dark themes for better usability.
+- 🧩 **Augmented Reality (AR) Integration**
+  - View and interact with 3D clothing models using **ARCore** and **Sceneform**
 
-🔎 Search Functionality: Easily filter and find clothing items by category or name.
+- 🛒 **E-Commerce Functionalities**
+  - Browse products, view details, add to cart, and share items
 
-🔄 Navigation Drawer: Seamless access to profile, settings, AR view, and more.
+- ⚙️ **Admin Panel**
+  - Add/edit products with category, description, image upload via Firebase
 
-🔗 Social Sharing: Share app links and products with friends.
+- 🔍 **Search and Navigation**
+  - Filter products by name or category
+  - Navigation drawer for seamless user experience
 
-🛠 Tech Stack
-Frontend: Android (Java, XML)
+- 🌙 **Dark Mode Support**
 
-AR Integration: Google ARCore, Sceneform
+---
 
-Backend: Firebase (Authentication, Realtime Database, Storage)
+## 🧪 Technologies Used
 
-Development Environment: Android Studio
+| Component              | Technology                             |
+|------------------------|----------------------------------------|
+| Frontend               | Java (Android SDK), XML Layouts        |
+| Augmented Reality      | Google ARCore, Sceneform               |
+| Backend & Database     | Firebase Authentication & Realtime DB |
+| Media Storage          | Firebase Storage                       |
+| IDE                    | Android Studio                         |
 
-📸 Screenshots
+---
 
-1. Splash Screen
-   ![image](https://github.com/user-attachments/assets/4881ccdd-0eda-4e25-ae34-7efccd4eac40)
+## 📸 Screenshots
 
-   
-📂 Project Structure
-activities/ - Splash, Login, Register, Main, AR View, Detail View
+> ![image](https://github.com/user-attachments/assets/7ab127cf-7fc8-4110-b4ad-e30e9b7c5205)
+> ![image](https://github.com/user-attachments/assets/b8bbe24c-7e61-4cb0-8ba0-b56d94cda0a9)
+> ![image](https://github.com/user-attachments/assets/b931003c-79f5-4127-b46e-c65302346df3)
+> ![image](https://github.com/user-attachments/assets/340c357e-a6c2-42ad-9852-7dc04676a6d1)
+> ![image](https://github.com/user-attachments/assets/debe1409-53c4-4cdc-8ef8-78c1c9cd2383)
+> ![image](https://github.com/user-attachments/assets/ddeef95c-3e94-456d-b36a-59a6b2c45562)
+> ![image](https://github.com/user-attachments/assets/c7d5a5b7-5f40-4702-ba68-c7115f6f8eca)
+> ![image](https://github.com/user-attachments/assets/eeb0376b-a497-4e46-9f9d-3061285b066f)
+> ![image](https://github.com/user-attachments/assets/62dcae79-39a4-4777-8630-308eee447528)
+> ![image](https://github.com/user-attachments/assets/9e6f183f-9106-4e76-b40c-66316c76fd29)
+> ![image](https://github.com/user-attachments/assets/c2675223-481f-4cc6-af31-9c6f811e0728)
+> ![image](https://github.com/user-attachments/assets/f494e504-0fad-44f9-b3e0-17dc13368ba0)
 
-fragments/ - Home, Profile
+- Splash Screen
+- Login/Register
+- AR View
+- Product Details
+- Cart Page
+- Admin Upload Page
 
-models/ - Helper classes for user and product data
 
-utils/ - Session management, adapters, view holders
-
-layouts/ - XML layouts for all screens
-
-assets/ - 3D clothing models for AR visualization
-
-🧪 Testing
-Manual testing was conducted on Android devices that support ARCore and OpenGL 3.0+. Functionality across various user flows like login, profile updates, cart operations, and AR rendering were tested and validated.
-
-🔮 Future Enhancements
-ML model integration for more accurate size prediction
-
-Integration with payment gateways
-
-Try-on simulation using user avatars
-
-Chatbot assistant for fashion suggestions
-
-📌 How to Run
-Clone the repository
-
-Open in Android Studio
-
-Add your Firebase project configuration
-
-Run on a physical ARCore-supported Android device
-
-bash
-Copy
-Edit
-git clone https://github.com/your-username/aifit-virtual-fitting-app.git
